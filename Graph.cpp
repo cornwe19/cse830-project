@@ -74,4 +74,7 @@ int Graph::NumVertices()
 	return _numVertices;
 }
 
-
+Node** Graph::GetAllNodes()
+{
+	return _nodes;
+}

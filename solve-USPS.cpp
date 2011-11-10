@@ -2,6 +2,7 @@
 #include "Graph.h"
 #include <list>
 #include <set>
+#include <algorithm>
 
 using namespace std;
 
@@ -69,10 +70,17 @@ int main( int argc, char** argv )
 
 	SolveUSPS( graph, 0, new list<Node*>() );
 
-	list<Node*>::iterator it;
-	for ( it = _bestAnswerSoFar->begin(); it != _bestAnswerSoFar->end(); it++ )
+	cout << graph->NumVertices() - _bestAnswerSize << ": ";
+	
+	list<Node*> result( graph->NumVertices() );
+	list<Node*>::iterator it, resultIt;
+	
+	resultIt = set_difference( graph->GetAllNodes(), graph->GetAllNodes() + graph->NumVertices(),
+									_bestAnswerSoFar->begin(), _bestAnswerSoFar->end(), result.begin() );
+	
+	for (it = result.begin(); it != resultIt; it++ )
 	{
-		cout << (*it)->GetId() << ", ";
+		cout << (*it)->GetId() << " ";
 	}
 
 	cout << endl;

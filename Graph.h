@@ -15,7 +15,8 @@ public:
 	void LoadFromFile( const char* fileName );
 	Node* GetNode( int index );
 	int NumVertices();
-
+	Node** GetAllNodes();
+	
 private:
 	int _numVertices;
 	Node** _nodes;
