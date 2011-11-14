@@ -1,7 +1,5 @@
 #include "Node.h"
 
-#include <iostream>
-
 Node::Node( int id ) 
 {
 	_inclusion = NotConsidered;
@@ -33,3 +31,7 @@ int Node::GetId()
 	return _id;
 }
 
+bool Node::NumVerticesDescending( Node* a, Node* b )
+{
+   return a->GetAdjacentNodes().size() > b->GetAdjacentNodes().size();
+}

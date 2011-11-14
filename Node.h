@@ -23,6 +23,8 @@ public:
 	int GetId();
 	Inclusion GetInclusion() { return _inclusion; }
 
+	static bool NumVerticesDescending( Node* a, Node* b );
+
 private:
 	Inclusion _inclusion;
 	int _id;

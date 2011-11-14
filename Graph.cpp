@@ -44,13 +44,15 @@ void Graph::LoadFromFile( const char* fileName )
 		_nodes[edgeTo]->AddNode( edgeFrom );
 	}
 
+	sort( _nodes, _nodes + _numVertices, Node::NumVerticesDescending );
+
 	// Turn this off in production
 	for ( int i = 0; i < _numVertices; i++ )
 	{
 		//cout << i << endl;
 		
 		// Print node.
-		cout << "Node #" << i << ": [";
+		cout << "Node #" << _nodes[i]->GetId() << ": [";
 		list<int> adjacentNodes = _nodes[i]->GetAdjacentNodes();
 		list<int>::iterator nodeIt;
 

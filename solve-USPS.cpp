@@ -8,7 +8,7 @@ using namespace std;
 
 bool ListIsValidInGraph( list<Node*> *inclusions, Graph* graph )
 {
-	set<int> touchedNodes;
+   set<int> touchedNodes;
 	
 	list<Node*>::iterator it;
 	for( it = inclusions->begin(); it != inclusions->end(); it++ )
@@ -35,21 +35,24 @@ list<Node*> *_bestAnswerSoFar;
 
 void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes )
 {
-   if( nextNode < graph->NumVertices() )
+   if( includedNodes->size() < _bestAnswerSize )
    {
-		list<Node*> *listIfIncluded = new list<Node*>( *includedNodes );
+      if( nextNode < graph->NumVertices() )
+      {
+         list<Node*> *listIfIncluded = new list<Node*>( *includedNodes );
 
-		listIfIncluded->push_back( graph->GetNode( nextNode ) );
-	 
-		SolveUSPS( graph, nextNode + 1, listIfIncluded );
+         listIfIncluded->push_back( graph->GetNode( nextNode ) );
 
-		SolveUSPS( graph, nextNode + 1, includedNodes );
-	} 
-	else if( ListIsValidInGraph( includedNodes, graph ) && includedNodes->size() < _bestAnswerSize )
-	{
-		_bestAnswerSize = includedNodes->size();
-		_bestAnswerSoFar = includedNodes;
-	}
+         SolveUSPS( graph, nextNode + 1, listIfIncluded );
+
+         SolveUSPS( graph, nextNode + 1, includedNodes );
+      }
+      else if ( ListIsValidInGraph( includedNodes, graph ) )
+      {
+         _bestAnswerSize = includedNodes->size();
+         _bestAnswerSoFar = includedNodes;
+      }
+   }
 }
 
 int main( int argc, char** argv )
