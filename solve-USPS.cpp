@@ -6,53 +6,59 @@
 
 using namespace std;
 
-unsigned GetNumberOfVerticesTouched( list<Node*> *inclusions, Graph* graph )
+void AddVerticesTouchedToSet( int currentNode, set<int> *touchedNodes, Graph* graph )
 {
-   set<int> touchedNodes;
+   Node* current = graph->GetNode( currentNode );
 
-   list<Node*>::iterator it;
-   for( it = inclusions->begin(); it != inclusions->end(); it++ )
+   touchedNodes->insert(current->GetId());
+
+   list<int>::iterator edgeIt;
+   for( edgeIt = current->GetAdjacentNodes()->begin(); edgeIt != current->GetAdjacentNodes()->end(); edgeIt++ )
    {
-      touchedNodes.insert( (*it)->GetId() );
-
-      list<int> current = (*it)->GetAdjacentNodes();
-      list<int>::iterator edgeIt;
-      for( edgeIt = current.begin(); edgeIt != current.end(); edgeIt++ )
-      {
-         touchedNodes.insert( *edgeIt );
-         if( touchedNodes.size() == (unsigned)graph->NumVertices() )
-         {
-            break;
-         }
-      }
+      touchedNodes->insert( *edgeIt );
    }
-
-   return touchedNodes.size();
 }
 
-bool ListIsValidInGraph( list<Node*> *inclusions, Graph* graph )
+bool ListIsValidInGraph( set<int> *touchedNodes, Graph* graph )
 {
-   return GetNumberOfVerticesTouched( inclusions, graph ) == (unsigned)graph->NumVertices();
+   return touchedNodes->size() == (unsigned)graph->NumVertices();
+}
+
+bool CanAttainLegalAnswer( set<int> *touchedNodes, Graph* graph, int nodeIndex )
+{
+   bool answerCanBeLegal = true;
+
+   if( nodeIndex >= 0 )
+   {
+      int numNodesLeftToProcess = graph->NumVertices() - nodeIndex;
+      int numNodesPossibleToHit = numNodesLeftToProcess * graph->GetMaxDegree( nodeIndex );
+
+      answerCanBeLegal = ( touchedNodes->size() + numNodesPossibleToHit ) >= (unsigned)graph->NumVertices();
+   }
+
+   return answerCanBeLegal;
 }
 
 unsigned _bestAnswerSize;
 list<Node*> *_bestAnswerSoFar;
 
-void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes )
+void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int> *touchedNodes )
 {
-   if( includedNodes->size() < _bestAnswerSize )
+   if( includedNodes->size() < _bestAnswerSize && CanAttainLegalAnswer( touchedNodes, graph, nextNode ) )
    {
       if( nextNode < graph->NumVertices() )
       {
-         list<Node*> *listIfIncluded = new list<Node*>( *includedNodes );
+         includedNodes->push_back( graph->GetNode( nextNode ) );
+         set<int>* newSet = new set<int>( *touchedNodes );
+         AddVerticesTouchedToSet( nextNode, newSet, graph );
 
-         listIfIncluded->push_back( graph->GetNode( nextNode ) );
+         SolveUSPS( graph, nextNode + 1, includedNodes, newSet );
 
-         SolveUSPS( graph, nextNode + 1, listIfIncluded );
+         includedNodes->pop_back();
 
-         SolveUSPS( graph, nextNode + 1, includedNodes );
+         SolveUSPS( graph, nextNode + 1, includedNodes, touchedNodes );
       }
-      else if ( ListIsValidInGraph( includedNodes, graph ) )
+      else if ( ListIsValidInGraph( touchedNodes, graph ) )
       {
          _bestAnswerSize = includedNodes->size();
          _bestAnswerSoFar = includedNodes;
@@ -76,7 +82,9 @@ int main( int argc, char** argv )
 
 	_bestAnswerSize = graph->NumVertices();
 
-	SolveUSPS( graph, 0, new list<Node*>() );
+	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
+
+	cout << "found solution with " << _bestAnswerSize << " vertices" << endl;
 
 	cout << graph->NumVertices() - _bestAnswerSize << ": ";
 	

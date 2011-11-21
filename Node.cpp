@@ -21,9 +21,9 @@ void Node::AddNode( int nodeRef )
 	_adjacentNodes->push_back( nodeRef );	
 }
 
-list<int> Node::GetAdjacentNodes()
+list<int>* Node::GetAdjacentNodes()
 {
-	return *_adjacentNodes;
+	return _adjacentNodes;
 }
 
 int Node::GetId()
@@ -33,5 +33,5 @@ int Node::GetId()
 
 bool Node::NumVerticesDescending( Node* a, Node* b )
 {
-   return a->GetAdjacentNodes().size() > b->GetAdjacentNodes().size();
+   return a->GetAdjacentNodes()->size() > b->GetAdjacentNodes()->size();
 }

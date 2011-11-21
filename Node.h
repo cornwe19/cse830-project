@@ -18,7 +18,7 @@ public:
 	~Node();
 
 	void AddNode( int nodeRef );
-	list<int> GetAdjacentNodes();
+	list<int>* GetAdjacentNodes();
 	
 	int GetId();
 	Inclusion GetInclusion() { return _inclusion; }

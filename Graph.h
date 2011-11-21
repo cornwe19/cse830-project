@@ -16,6 +16,7 @@ public:
 	Node* GetNode( int index );
 	int NumVertices();
 	Node** GetAllNodes();
+	int GetMaxDegree( int numNodesProcessed = 0 );
 	
 private:
 	int _numVertices;

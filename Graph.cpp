@@ -53,10 +53,10 @@ void Graph::LoadFromFile( const char* fileName )
 		
 		// Print node.
 		cout << "Node #" << _nodes[i]->GetId() << ": [";
-		list<int> adjacentNodes = _nodes[i]->GetAdjacentNodes();
+		list<int>* adjacentNodes = _nodes[i]->GetAdjacentNodes();
 		list<int>::iterator nodeIt;
 
-		for (nodeIt = adjacentNodes.begin(); nodeIt != adjacentNodes.end(); nodeIt++ )
+		for (nodeIt = adjacentNodes->begin(); nodeIt != adjacentNodes->end(); nodeIt++ )
 		{
 			cout << " " << *nodeIt;
 		}
@@ -79,4 +79,16 @@ int Graph::NumVertices()
 Node** Graph::GetAllNodes()
 {
 	return _nodes;
+}
+
+// NOTE: Assumes nodes are sorted descending by edges on reading in
+int Graph::GetMaxDegree( int nodeBeingProcessed /* = 0 */ )
+{
+   int maxDegree = 0;
+   if( nodeBeingProcessed < _numVertices )
+   {
+      maxDegree = _nodes[nodeBeingProcessed]->GetAdjacentNodes()->size();
+   }
+
+   return maxDegree;
 }
