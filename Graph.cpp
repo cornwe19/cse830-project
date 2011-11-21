@@ -47,22 +47,7 @@ void Graph::LoadFromFile( const char* fileName )
 	sort( _nodes, _nodes + _numVertices, Node::NumVerticesDescending );
 
 	// Turn this off in production
-	for ( int i = 0; i < _numVertices; i++ )
-	{
-		//cout << i << endl;
-		
-		// Print node.
-		cout << "Node #" << _nodes[i]->GetId() << ": [";
-		list<int>* adjacentNodes = _nodes[i]->GetAdjacentNodes();
-		list<int>::iterator nodeIt;
-
-		for (nodeIt = adjacentNodes->begin(); nodeIt != adjacentNodes->end(); nodeIt++ )
-		{
-			cout << " " << *nodeIt;
-		}
-
-		cout << "]" << endl;
-	}
+	//PrintNodes();	
 	// Turn this off in production
 }
 
@@ -92,3 +77,22 @@ int Graph::GetMaxDegree( int nodeBeingProcessed /* = 0 */ )
 
    return maxDegree;
 }
+
+void Graph::PrintNodes()
+{
+	for ( int i = 0; i < _numVertices; i++ )
+	{
+		// Print node.
+		cout << "Node #" << _nodes[i]->GetId() << ": [";
+		list<int>* adjacentNodes = _nodes[i]->GetAdjacentNodes();
+		list<int>::iterator nodeIt;
+
+		for (nodeIt = adjacentNodes->begin(); nodeIt != adjacentNodes->end(); nodeIt++ )
+		{
+			cout << " " << *nodeIt;
+		}
+
+		cout << "]" << endl;
+	}
+}
+

@@ -21,5 +21,7 @@ public:
 private:
 	int _numVertices;
 	Node** _nodes;
+
+	void PrintNodes();
 };
 

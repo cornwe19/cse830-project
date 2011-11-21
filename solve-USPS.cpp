@@ -46,7 +46,7 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
 {
    if( includedNodes->size() < _bestAnswerSize && CanAttainLegalAnswer( touchedNodes, graph, nextNode ) )
    {
-      if( nextNode < graph->NumVertices() )
+      if( nextNode < graph->NumVertices() && !ListIsValidInGraph(touchedNodes, graph) )
       {
          includedNodes->push_back( graph->GetNode( nextNode ) );
          set<int>* newSet = new set<int>( *touchedNodes );
@@ -66,6 +66,28 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
    }
 }
 
+int GetPolynomialTimeGoodAnswer( Graph* graph )
+{
+	set<int> touchedNodes;
+	int currentNodeIndex = 0;
+	while( true )
+	{
+		Node* currentNode = graph->GetNode( currentNodeIndex );
+		list<int>* currentAdjacentNodes = currentNode->GetAdjacentNodes();
+		list<int>::iterator it;
+		for( it = currentAdjacentNodes->begin(); it != currentAdjacentNodes->end(); it++ )
+		{
+			touchedNodes.insert( *it );
+			if( touchedNodes.size() == (unsigned)graph->NumVertices() )
+			{
+				return currentNodeIndex;
+			}
+		}
+
+		currentNodeIndex++;
+	}
+}
+
 int main( int argc, char** argv )
 {
 	char* fileName = NULL; 
@@ -78,15 +100,13 @@ int main( int argc, char** argv )
 	fileName = argv[1];
 
 	Graph* graph = new Graph();
-	graph->LoadFromFile( fileName );
+	graph->LoadFromFile( fileName );	
 
-	_bestAnswerSize = graph->NumVertices();
+	_bestAnswerSize = GetPolynomialTimeGoodAnswer( graph );
 
 	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
 
-	cout << "found solution with " << _bestAnswerSize << " vertices" << endl;
-
-	cout << graph->NumVertices() - _bestAnswerSize << ": ";
+	cout << graph->NumVertices() - _bestAnswerSize << " : ";
 	
 	list<Node*> result( graph->NumVertices() );
 	list<Node*>::iterator it, resultIt;
