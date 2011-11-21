@@ -6,28 +6,33 @@
 
 using namespace std;
 
-bool ListIsValidInGraph( list<Node*> *inclusions, Graph* graph )
+unsigned GetNumberOfVerticesTouched( list<Node*> *inclusions, Graph* graph )
 {
    set<int> touchedNodes;
-	
-	list<Node*>::iterator it;
-	for( it = inclusions->begin(); it != inclusions->end(); it++ )
-	{
-		touchedNodes.insert( (*it)->GetId() );
-		
-		list<int> current = (*it)->GetAdjacentNodes();
-		list<int>::iterator edgeIt;
-		for( edgeIt = current.begin(); edgeIt != current.end(); edgeIt++ )
-		{
-			touchedNodes.insert( *edgeIt );
-			if( touchedNodes.size() == (unsigned)graph->NumVertices() )
-			{
-				return true;
-			}
-		}
-	}
 
-	return false;
+   list<Node*>::iterator it;
+   for( it = inclusions->begin(); it != inclusions->end(); it++ )
+   {
+      touchedNodes.insert( (*it)->GetId() );
+
+      list<int> current = (*it)->GetAdjacentNodes();
+      list<int>::iterator edgeIt;
+      for( edgeIt = current.begin(); edgeIt != current.end(); edgeIt++ )
+      {
+         touchedNodes.insert( *edgeIt );
+         if( touchedNodes.size() == (unsigned)graph->NumVertices() )
+         {
+            break;
+         }
+      }
+   }
+
+   return touchedNodes.size();
+}
+
+bool ListIsValidInGraph( list<Node*> *inclusions, Graph* graph )
+{
+   return GetNumberOfVerticesTouched( inclusions, graph ) == (unsigned)graph->NumVertices();
 }
 
 unsigned _bestAnswerSize;
