@@ -26,14 +26,22 @@ bool ListIsValidInGraph( set<int> *touchedNodes, Graph* graph )
 
 bool CanAttainLegalAnswer( set<int> *touchedNodes, Graph* graph, int nodeIndex )
 {
-   bool answerCanBeLegal = true;
-
-   if( nodeIndex >= 0 )
+   if( ListIsValidInGraph( touchedNodes, graph ) )
    {
-      int numNodesLeftToProcess = graph->NumVertices() - nodeIndex;
-      int numNodesPossibleToHit = numNodesLeftToProcess * graph->GetMaxDegree( nodeIndex );
+      return true;
+   }
 
-      answerCanBeLegal = ( touchedNodes->size() + numNodesPossibleToHit ) >= (unsigned)graph->NumVertices();
+   bool answerCanBeLegal = false;
+
+   set<int>* completeSet = new set<int>( *touchedNodes );
+   for( int i = nodeIndex; i < graph->NumVertices(); i++ )
+   {
+      AddVerticesTouchedToSet( i, completeSet, graph );
+      if( completeSet->size() == (unsigned)graph->NumVertices() )
+      {
+         answerCanBeLegal = true;
+         break;
+      }
    }
 
    return answerCanBeLegal;
@@ -44,7 +52,7 @@ list<Node*> *_bestAnswerSoFar;
 
 void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int> *touchedNodes )
 {
-   if( includedNodes->size() < _bestAnswerSize )
+   if( includedNodes->size() < _bestAnswerSize && CanAttainLegalAnswer( touchedNodes, graph, nextNode ) )
    {
       if( nextNode < graph->NumVertices() && !ListIsValidInGraph(touchedNodes, graph) )
       {
@@ -53,10 +61,6 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
          includedNodes->push_back( currentNode );
          set<int>* newSet = new set<int>( *touchedNodes );
          AddVerticesTouchedToSet( nextNode, newSet, graph );
-
-         // DEBUG
-         // currentNode->SetConsideration( Considered );
-         // \DEBUG
 
          SolveUSPS( graph, nextNode + 1, includedNodes, newSet );
 
@@ -144,10 +148,6 @@ int main( int argc, char** argv )
 	}
 
 	cout << endl;
-
-	// DEBUG
-	// PrintInclusions( graph );
-	// \DEBUG
 
 	delete graph;
 }

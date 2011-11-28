@@ -10,7 +10,7 @@ GCC = g++ -Wall -I.
 
 .cpp.o: ${DOTHS}
 	echo "Compiling \"$<\"..."
-	${GCC} -c $<
+	${GCC} -c -O3 $<
 
 ${APP}: ${OBJS}
 	echo "Linking project..."
