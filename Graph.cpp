@@ -1,5 +1,6 @@
 #include "Graph.h"
 
+#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -37,8 +38,12 @@ void Graph::LoadFromFile( const char* fileName )
 
 	while( graphFile.good() )
 	{
-		graphFile >> edgeFrom;
-		graphFile >> edgeTo;
+	   char charEdgeFrom[10], charEdgeTo[10];
+		graphFile.getline( charEdgeFrom, 10, ' ' );
+		graphFile.getline( charEdgeTo, 10 );
+
+		edgeFrom = atoi( charEdgeFrom );
+		edgeTo = atoi( charEdgeTo );
 
 		_nodes[edgeFrom]->AddNode( edgeTo );
 		_nodes[edgeTo]->AddNode( edgeFrom );
@@ -47,7 +52,7 @@ void Graph::LoadFromFile( const char* fileName )
 	sort( _nodes, _nodes + _numVertices, Node::NumVerticesDescending );
 
 	// Turn this off in production
-	//PrintNodes();	
+	//PrintNodes();
 	// Turn this off in production
 }
 

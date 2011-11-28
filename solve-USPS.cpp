@@ -44,13 +44,19 @@ list<Node*> *_bestAnswerSoFar;
 
 void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int> *touchedNodes )
 {
-   if( includedNodes->size() < _bestAnswerSize && CanAttainLegalAnswer( touchedNodes, graph, nextNode ) )
+   if( includedNodes->size() < _bestAnswerSize )
    {
       if( nextNode < graph->NumVertices() && !ListIsValidInGraph(touchedNodes, graph) )
       {
-         includedNodes->push_back( graph->GetNode( nextNode ) );
+         Node* currentNode = graph->GetNode( nextNode );
+
+         includedNodes->push_back( currentNode );
          set<int>* newSet = new set<int>( *touchedNodes );
          AddVerticesTouchedToSet( nextNode, newSet, graph );
+
+         // DEBUG
+         // currentNode->SetConsideration( Considered );
+         // \DEBUG
 
          SolveUSPS( graph, nextNode + 1, includedNodes, newSet );
 
@@ -66,26 +72,41 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
    }
 }
 
-int GetPolynomialTimeGoodAnswer( Graph* graph )
+void GetPolynomialTimeGoodAnswer( Graph* graph, list<Node*> *nodeListToFill )
 {
 	set<int> touchedNodes;
 	int currentNodeIndex = 0;
+	nodeListToFill->clear();
+
 	while( true )
 	{
 		Node* currentNode = graph->GetNode( currentNodeIndex );
 		list<int>* currentAdjacentNodes = currentNode->GetAdjacentNodes();
 		list<int>::iterator it;
+
+		nodeListToFill->push_back( currentNode );
+
 		for( it = currentAdjacentNodes->begin(); it != currentAdjacentNodes->end(); it++ )
 		{
 			touchedNodes.insert( *it );
 			if( touchedNodes.size() == (unsigned)graph->NumVertices() )
 			{
-				return currentNodeIndex;
+				return;
 			}
 		}
 
 		currentNodeIndex++;
 	}
+}
+
+void PrintInclusions( Graph* graph )
+{
+   for( int i = 0; i < graph->NumVertices(); i++ )
+   {
+      Node* node = graph->GetNode( i );
+      cout << node->GetId() << ":" << node->GetConsideration() << " ";
+   }
+   cout << endl;
 }
 
 int main( int argc, char** argv )
@@ -102,7 +123,10 @@ int main( int argc, char** argv )
 	Graph* graph = new Graph();
 	graph->LoadFromFile( fileName );	
 
-	_bestAnswerSize = GetPolynomialTimeGoodAnswer( graph );
+	_bestAnswerSoFar = new list<Node*>();
+
+	GetPolynomialTimeGoodAnswer( graph, _bestAnswerSoFar );
+	_bestAnswerSize = _bestAnswerSoFar->size();
 
 	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
 
@@ -113,13 +137,17 @@ int main( int argc, char** argv )
 	
 	resultIt = set_difference( graph->GetAllNodes(), graph->GetAllNodes() + graph->NumVertices(),
 									_bestAnswerSoFar->begin(), _bestAnswerSoFar->end(), result.begin() );
-	
+
 	for (it = result.begin(); it != resultIt; it++ )
 	{
 		cout << (*it)->GetId() << " ";
 	}
 
 	cout << endl;
+
+	// DEBUG
+	// PrintInclusions( graph );
+	// \DEBUG
 
 	delete graph;
 }

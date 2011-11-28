@@ -2,7 +2,7 @@
 
 Node::Node( int id ) 
 {
-	_inclusion = NotConsidered;
+	_consideration = NotConsidered;
 	_id = id;
 	_adjacentNodes = new list<int>();
 }

@@ -4,11 +4,10 @@
 
 using namespace std;
 
-enum Inclusion 
+enum Consideration
 {
 	NotConsidered,
-	Included,
-	NotIncluded
+	Considered
 };
 
 class Node
@@ -21,12 +20,13 @@ public:
 	list<int>* GetAdjacentNodes();
 	
 	int GetId();
-	Inclusion GetInclusion() { return _inclusion; }
+	Consideration GetConsideration() { return _consideration; }
+	void SetConsideration( Consideration consideration ) { _consideration = consideration; }
 
 	static bool NumVerticesDescending( Node* a, Node* b );
 
 private:
-	Inclusion _inclusion;
+   Consideration _consideration;
 	int _id;
 	list<int>* _adjacentNodes;	
 };
