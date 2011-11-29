@@ -6,7 +6,7 @@ using namespace std;
 
 Node::Node( int id ) 
 {
-	_consideration = NotConsidered;
+	_preIncluded = false;
 	_id = id;
 	_adjacentNodes = new list<int>();
 }

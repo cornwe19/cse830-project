@@ -6,17 +6,22 @@
 
 using namespace std;
 
+void AddVerticesTouchedToSet( Node* currentNode, set<int> *touchedNodes )
+{
+   touchedNodes->insert(currentNode->GetId());
+
+   list<int>::iterator edgeIt;
+   for( edgeIt = currentNode->GetAdjacentNodes()->begin(); edgeIt != currentNode->GetAdjacentNodes()->end(); edgeIt++ )
+   {
+      touchedNodes->insert( *edgeIt );
+   }
+}
+
 void AddVerticesTouchedToSet( int currentNode, set<int> *touchedNodes, Graph* graph )
 {
    Node* current = graph->GetNode( currentNode );
 
-   touchedNodes->insert(current->GetId());
-
-   list<int>::iterator edgeIt;
-   for( edgeIt = current->GetAdjacentNodes()->begin(); edgeIt != current->GetAdjacentNodes()->end(); edgeIt++ )
-   {
-      touchedNodes->insert( *edgeIt );
-   }
+   AddVerticesTouchedToSet( current, touchedNodes );
 }
 
 bool ListIsValidInGraph( set<int> *touchedNodes, Graph* graph )
@@ -58,13 +63,16 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
       {
          Node* currentNode = graph->GetNode( nextNode );
 
-         includedNodes->push_back( currentNode );
-         set<int>* newSet = new set<int>( *touchedNodes );
-         AddVerticesTouchedToSet( nextNode, newSet, graph );
+         if( !currentNode->IsPreIncluded() )
+         {
+            includedNodes->push_back( currentNode );
+            set<int>* newSet = new set<int>( *touchedNodes );
+            AddVerticesTouchedToSet( nextNode, newSet, graph );
 
-         SolveUSPS( graph, nextNode + 1, includedNodes, newSet );
+            SolveUSPS( graph, nextNode + 1, includedNodes, newSet );
 
-         includedNodes->pop_back();
+            includedNodes->pop_back();
+         }
 
          SolveUSPS( graph, nextNode + 1, includedNodes, touchedNodes );
       }
@@ -104,14 +112,28 @@ void GetPolynomialTimeGoodAnswer( Graph* graph, list<Node*> *nodeListToFill )
 	}
 }
 
-void PrintInclusions( Graph* graph )
+void PruneLeafNodes( Graph* graph, list<Node*> *includedNodes, set<int> *touchedNodes )
 {
-   for( int i = 0; i < graph->NumVertices(); i++ )
+   // Assumes graph is sorted in descending order
+   //  - Traverse graph from nodes with least degree first...
+   int currentIndex = graph->NumVertices() - 1;
+   Node* currentNode = graph->GetNode( currentIndex );
+   while( currentNode->GetAdjacentNodes()->size() == 1 )
    {
-      Node* node = graph->GetNode( i );
-      cout << node->GetId() << ":" << node->GetConsideration() << " ";
+      cout << "Pruning node at index " << currentIndex << endl;
+      Node* adjacentNode = graph->GetNodeWithId( currentNode->GetAdjacentNodes()->front() );
+      if( !adjacentNode->IsPreIncluded() )
+      {
+         adjacentNode->PreInclude();
+
+         AddVerticesTouchedToSet( adjacentNode, touchedNodes );
+         includedNodes->push_back( adjacentNode );
+      }
+
+      graph->RemoveNode( currentIndex );
+
+      currentNode = graph->GetNode( --currentIndex );
    }
-   cout << endl;
 }
 
 int main( int argc, char** argv )
@@ -132,8 +154,14 @@ int main( int argc, char** argv )
 
 	GetPolynomialTimeGoodAnswer( graph, _bestAnswerSoFar );
 	_bestAnswerSize = _bestAnswerSoFar->size();
+	cout << "Setting best answer size to " << _bestAnswerSize << endl;
 
-	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
+	list<Node*>* includedNodes = new list<Node*>();
+	set<int>* touchedNodes = new set<int>();
+
+	//PruneLeafNodes( graph, includedNodes, touchedNodes );
+
+	SolveUSPS( graph, 0, includedNodes, touchedNodes );
 
 	list<Node*> result( graph->NumVertices() );
 	list<Node*>::iterator it, resultIt;
@@ -151,6 +179,9 @@ int main( int argc, char** argv )
 	}
 
 	cout << endl;
+
+	delete includedNodes;
+	delete touchedNodes;
 
 	delete graph;
 }
