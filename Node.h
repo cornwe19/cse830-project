@@ -23,6 +23,7 @@ public:
 	Consideration GetConsideration() { return _consideration; }
 	void SetConsideration( Consideration consideration ) { _consideration = consideration; }
 
+	static bool Compare( Node* a, Node* b );
 	static bool NumVerticesDescending( Node* a, Node* b );
 
 private:

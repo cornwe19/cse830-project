@@ -71,7 +71,8 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
       else if ( ListIsValidInGraph( touchedNodes, graph ) )
       {
          _bestAnswerSize = includedNodes->size();
-         _bestAnswerSoFar = includedNodes;
+         delete _bestAnswerSoFar;
+         _bestAnswerSoFar = new list<Node*>( *includedNodes );
       }
    }
 }
@@ -134,13 +135,15 @@ int main( int argc, char** argv )
 
 	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
 
-	cout << graph->NumVertices() - _bestAnswerSize << " : ";
-	
 	list<Node*> result( graph->NumVertices() );
 	list<Node*>::iterator it, resultIt;
-	
+
+	cout << graph->NumVertices() - _bestAnswerSize << " : ";
+
+	_bestAnswerSoFar->sort( Node::Compare );
+
 	resultIt = set_difference( graph->GetAllNodes(), graph->GetAllNodes() + graph->NumVertices(),
-									_bestAnswerSoFar->begin(), _bestAnswerSoFar->end(), result.begin() );
+									_bestAnswerSoFar->begin(), _bestAnswerSoFar->end(), result.begin(), Node::Compare );
 
 	for (it = result.begin(); it != resultIt; it++ )
 	{

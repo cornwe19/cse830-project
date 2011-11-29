@@ -1,5 +1,9 @@
 #include "Node.h"
 
+#include <iostream>
+
+using namespace std;
+
 Node::Node( int id ) 
 {
 	_consideration = NotConsidered;
@@ -34,4 +38,9 @@ int Node::GetId()
 bool Node::NumVerticesDescending( Node* a, Node* b )
 {
    return a->GetAdjacentNodes()->size() > b->GetAdjacentNodes()->size();
+}
+
+bool Node::Compare( Node* a, Node* b)
+{
+   return a->GetId() < b->GetId();
 }

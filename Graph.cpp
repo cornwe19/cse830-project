@@ -15,6 +15,7 @@ Graph::~Graph()
 	{
 		delete [] _nodes;
 		_nodes = NULL;
+		_initialOrderNodes = NULL;
 	}
 }
 
@@ -29,11 +30,13 @@ void Graph::LoadFromFile( const char* fileName )
 	graphFile >> _numVertices >> numEdges;
 
 	_nodes = new Node*[_numVertices];
+	_initialOrderNodes = new Node*[_numVertices];
 	
 	// Allocate nodes
 	for( int i = 0; i < _numVertices; i++ )
 	{
 		_nodes[i] = new Node( i );
+		_initialOrderNodes[i] = _nodes[i];
 	}
 
 	while( graphFile.good() )
@@ -68,7 +71,7 @@ int Graph::NumVertices()
 
 Node** Graph::GetAllNodes()
 {
-	return _nodes;
+	return _initialOrderNodes;
 }
 
 // NOTE: Assumes nodes are sorted descending by edges on reading in
