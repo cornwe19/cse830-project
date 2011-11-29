@@ -17,10 +17,13 @@ public:
 	int NumVertices();
 	Node** GetAllNodes();
 	int GetMaxDegree( int numNodesProcessed = 0 );
+	void RemoveNode( int index );
+	Node* GetNodeWithId( int id ) { return _initialOrderNodes[id]; }
 	
 private:
 	int _numVertices;
 	Node** _nodes;
+	Node** _initialOrderNodes;
 
 	void PrintNodes();
 };

@@ -29,11 +29,13 @@ void Graph::LoadFromFile( const char* fileName )
 	graphFile >> _numVertices >> numEdges;
 
 	_nodes = new Node*[_numVertices];
+	_initialOrderNodes = new Node*[_numVertices];
 	
 	// Allocate nodes
 	for( int i = 0; i < _numVertices; i++ )
 	{
 		_nodes[i] = new Node( i );
+		_initialOrderNodes[i] = _nodes[i];
 	}
 
 	while( graphFile.good() )
@@ -52,7 +54,22 @@ void Graph::LoadFromFile( const char* fileName )
 	sort( _nodes, _nodes + _numVertices, Node::NumVerticesDescending );
 
 	// Turn this off in production
-	//PrintNodes();
+	PrintNodes();
+//	cout << "Initial Ordering:" << endl;
+//	for ( int i = 0; i < _numVertices; i++ )
+//	{
+//	   cout << "Node #" << _initialOrderNodes[i]->GetId() << ": [";
+//      list<int>* adjacentNodes = _initialOrderNodes[i]->GetAdjacentNodes();
+//      list<int>::iterator nodeIt;
+//
+//      for (nodeIt = adjacentNodes->begin(); nodeIt != adjacentNodes->end(); nodeIt++ )
+//      {
+//         cout << " " << *nodeIt;
+//      }
+//
+//      cout << "]" << endl;
+//	}
+
 	// Turn this off in production
 }
 
@@ -101,3 +118,17 @@ void Graph::PrintNodes()
 	}
 }
 
+void Graph::RemoveNode( int nodeIndex )
+{
+   if( _nodes[nodeIndex] != NULL )
+   {
+      int nodeId = _nodes[nodeIndex]->GetId();
+
+      delete _initialOrderNodes[nodeId];
+
+      _initialOrderNodes[nodeId] = NULL;
+      _nodes[nodeIndex] = NULL;
+
+      _numVertices--;
+   }
+}
