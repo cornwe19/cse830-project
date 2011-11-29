@@ -10,6 +10,7 @@ GCC = g++ -Wall -I.
 
 .cpp.o: ${DOTHS}
 	echo "Compiling \"$<\"..."
+	# Compile with level 3 optimizations
 	${GCC} -c -O3 $<
 
 ${APP}: ${OBJS}

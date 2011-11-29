@@ -4,12 +4,7 @@
 
 using namespace std;
 
-enum Consideration
-{
-	NotConsidered,
-	Considered
-};
-
+// Simple node class tailored specifically for the solve-USPS problem
 class Node
 {
 public:
@@ -20,15 +15,14 @@ public:
 	list<int>* GetAdjacentNodes();
 	
 	int GetId();
-	Consideration GetConsideration() { return _consideration; }
-	void SetConsideration( Consideration consideration ) { _consideration = consideration; }
 
+	// Helper methods for sorting nodes in a graph
 	static bool Compare( Node* a, Node* b );
 	static bool NumVerticesDescending( Node* a, Node* b );
 
 private:
-   Consideration _consideration;
 	int _id;
+	// Maintains a simple list of integers that represent node IDs in the graph
 	list<int>* _adjacentNodes;	
 };
 

@@ -29,10 +29,12 @@ void Graph::LoadFromFile( const char* fileName )
 
 	graphFile >> _numVertices >> numEdges;
 
+	// Keep a list of node pointers to sort by degree and another
+	// to keep track of initial node ordering (fast access)
 	_nodes = new Node*[_numVertices];
 	_initialOrderNodes = new Node*[_numVertices];
 	
-	// Allocate nodes
+	// Allocate node lists
 	for( int i = 0; i < _numVertices; i++ )
 	{
 		_nodes[i] = new Node( i );
@@ -54,9 +56,7 @@ void Graph::LoadFromFile( const char* fileName )
 
 	sort( _nodes, _nodes + _numVertices, Node::NumVerticesDescending );
 
-	// Turn this off in production
-	//PrintNodes();
-	// Turn this off in production
+	graphFile.close();
 }
 
 Node* Graph::GetNode( int index )
@@ -69,6 +69,7 @@ int Graph::NumVertices()
 	return _numVertices;
 }
 
+// Gets all nodes in initial order
 Node** Graph::GetAllNodes()
 {
 	return _initialOrderNodes;
@@ -86,6 +87,7 @@ int Graph::GetMaxDegree( int nodeBeingProcessed /* = 0 */ )
    return maxDegree;
 }
 
+// **For debugging purposes only**
 void Graph::PrintNodes()
 {
 	for ( int i = 0; i < _numVertices; i++ )

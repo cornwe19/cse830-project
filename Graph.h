@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Simple graph class tailored specifically for the solve-USPS problem
 class Graph
 {
 public:
@@ -23,6 +24,7 @@ private:
 	Node** _nodes;
 	Node** _initialOrderNodes;
 
+	// **For debugging purposes only**
 	void PrintNodes();
 };
 

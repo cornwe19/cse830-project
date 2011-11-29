@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Includes any vertices a node touches into the set of touched nodes
 void AddVerticesTouchedToSet( int currentNode, set<int> *touchedNodes, Graph* graph )
 {
    Node* current = graph->GetNode( currentNode );
@@ -19,18 +20,22 @@ void AddVerticesTouchedToSet( int currentNode, set<int> *touchedNodes, Graph* gr
    }
 }
 
+// Makes sure every node on the graph has been touched (neighbored or included)
 bool ListIsValidInGraph( set<int> *touchedNodes, Graph* graph )
 {
    return touchedNodes->size() == (unsigned)graph->NumVertices();
 }
 
+// Pre-check to see if it's even possible to get a legal answer with the current set of nodes
 bool CanAttainLegalAnswer( set<int> *touchedNodes, Graph* graph, int nodeIndex )
 {
+   // Dont check anything if we have a valid set of included nodes
    if( ListIsValidInGraph( touchedNodes, graph ) )
    {
       return true;
    }
 
+   // Try including every node left and see if we get a legal answer
    bool answerCanBeLegal = false;
 
    set<int>* completeSet = new set<int>( *touchedNodes );
@@ -50,10 +55,13 @@ bool CanAttainLegalAnswer( set<int> *touchedNodes, Graph* graph, int nodeIndex )
 unsigned _bestAnswerSize;
 list<Node*> *_bestAnswerSoFar;
 
+// Recursive branching function
 void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int> *touchedNodes )
 {
+   // Check bounding and branching conditions to determine if we should abort current branch
    if( includedNodes->size() < _bestAnswerSize && CanAttainLegalAnswer( touchedNodes, graph, nextNode ) )
    {
+      // Check if we have a complete set of nodes
       if( nextNode < graph->NumVertices() && !ListIsValidInGraph(touchedNodes, graph) )
       {
          Node* currentNode = graph->GetNode( nextNode );
@@ -68,6 +76,7 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
 
          SolveUSPS( graph, nextNode + 1, includedNodes, touchedNodes );
       }
+      // If set is complete and valid, set the new best answer
       else if ( ListIsValidInGraph( touchedNodes, graph ) )
       {
          _bestAnswerSize = includedNodes->size();
@@ -77,6 +86,7 @@ void SolveUSPS( Graph* graph, int nextNode, list<Node*> *includedNodes, set<int>
    }
 }
 
+// Greedy include highest degree nodes to set an initial bound answer
 void GetPolynomialTimeGoodAnswer( Graph* graph, list<Node*> *nodeListToFill )
 {
 	set<int> touchedNodes;
@@ -104,16 +114,6 @@ void GetPolynomialTimeGoodAnswer( Graph* graph, list<Node*> *nodeListToFill )
 	}
 }
 
-void PrintInclusions( Graph* graph )
-{
-   for( int i = 0; i < graph->NumVertices(); i++ )
-   {
-      Node* node = graph->GetNode( i );
-      cout << node->GetId() << ":" << node->GetConsideration() << " ";
-   }
-   cout << endl;
-}
-
 int main( int argc, char** argv )
 {
 	char* fileName = NULL; 
@@ -135,13 +135,16 @@ int main( int argc, char** argv )
 
 	SolveUSPS( graph, 0, new list<Node*>(), new set<int>() );
 
+	// Print the results
 	list<Node*> result( graph->NumVertices() );
 	list<Node*>::iterator it, resultIt;
 
 	cout << graph->NumVertices() - _bestAnswerSize << " : ";
 
+	// Since we maintained a list of the nodes included, take the set difference between all the
+	// nodes in the graph and the list we best answer we ended up with. **Note requires best answer
+	// be sorted for efficiency in stl difference algorithm.
 	_bestAnswerSoFar->sort( Node::Compare );
-
 	resultIt = set_difference( graph->GetAllNodes(), graph->GetAllNodes() + graph->NumVertices(),
 									_bestAnswerSoFar->begin(), _bestAnswerSoFar->end(), result.begin(), Node::Compare );
 
